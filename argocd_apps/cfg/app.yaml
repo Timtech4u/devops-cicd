@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: saaspodinfo-git
+  namespace: argocd
+spec:
+  project: default  
+  destination:
+    namespace: cfg  #update namespace name if you wish
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: 'https://github.com/m3rryqold/cfghelm.git'  #replace with your username
+    path: gcp
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - http://nginx-service.argocd.svc.cluster.local/cfghelm_gcp_stg-values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

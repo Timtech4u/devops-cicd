@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gdsc-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gdsc
+  template:
+    metadata:
+      labels:
+        app: gdsc
+    spec:
+      containers:
+      - name: gdsc
+        image: timtech4u/flaskapp:latest
+        ports:
+        - containerPort: 8080

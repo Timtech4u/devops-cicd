@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcs-downloader
+  namespace: cfg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gcs-downloader
+  template:
+    metadata:
+      labels:
+        app: gcs-downloader
+    spec:
+      containers:
+        - name: gcs-downloader
+          image: google/cloud-sdk:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/bash"
+            - "-c"
+            - |
+              gcloud auth activate-service-account --key-file=/var/secrets/cfg-secret/key.json
+              gsutil cp gs://bucket-zero1/cfghelm_gcp_stg-values.yaml /tmp/values.yaml
+          volumeMounts:
+            - name: cfg-secret
+              mountPath: /var/secrets/cfg-secret
+              readOnly: true
+            - name: values-file
+              mountPath: /tmp/values.yaml
+      volumes:
+        - name: cfg-secret
+          secret:
+            secretName: cfg-secret
+            defaultMode: 420
+        - name: values-file
+          emptyDir: {}

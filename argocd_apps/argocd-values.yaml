@@ -1,0 +1,44 @@
+controller:
+  initContainers: 
+    - name: gcs-downloader
+      image: google/cloud-sdk:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - "/bin/bash"
+        - "-c"
+        - |
+          gcloud auth activate-service-account --key-file=/var/secrets/cfg-secret/key.json
+          gsutil cp gs://bucket-zero1/cfghelm_gcp_stg-values.yaml /tmp
+      volumeMounts:
+        - name: cfg-secret
+          mountPath: /var/secrets/cfg-secret
+          readOnly: true
+        - name: values-file
+          mountPath: /tmp
+  extraContainers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80 
+      volumeMounts:
+        - name: values-file
+          mountPath: /usr/share/nginx/html
+  volumeMounts:
+    - name: cfg-secret
+      mountPath: /var/secrets/cfg-secret
+      readOnly: true
+    - name: values-file
+      mountPath: /tmp
+  volumes:
+    - name: cfg-secret
+      secret:
+        secretName: cfg-secret
+        defaultMode: 420
+    - name: values-file
+      emptyDir: {}
+server:
+  service:
+    type: LoadBalancer
+configs:
+  secret:
+    argocdServerAdminPassword: "$2y$10$zXGjHzyaPWd6c9WrO3M7dO5g61gECA/sfI57mdOlTipNGC7nrbgHa"

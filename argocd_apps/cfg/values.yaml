@@ -1,0 +1,20 @@
+# Default values for accmgthelm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+common:
+  env: stg
+
+secret:
+  dburl: cfgms:klC9ejomlwr9f2b4uguh@tcp(db.stg-striimcloudweb.com:3306)/cfgms?parseTime=true
+
+deployment:
+  ms:
+    replicas: 2
+    memoryLimit: 512Mi
+    memoryReq: 128Mi
+    nodePool: common
+
+config:
+  app:
+    provider: gcp
