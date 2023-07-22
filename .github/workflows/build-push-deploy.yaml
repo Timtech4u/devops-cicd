@@ -20,7 +20,7 @@ jobs:
         
     - name: Build and Push Image to Google Container Registry
       run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/myapplication
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/myapplication .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/myapplication
 
     - name: Deploy to CloudRun
